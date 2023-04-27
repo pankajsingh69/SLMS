@@ -1,5 +1,7 @@
 package com.marchapr.LMSkunalsir.Services;
 
+import com.marchapr.LMSkunalsir.DTO.BookRequestDTO;
+import com.marchapr.LMSkunalsir.DTO.BookResponseDTO;
 import com.marchapr.LMSkunalsir.Models.Author;
 import com.marchapr.LMSkunalsir.Models.Book;
 import com.marchapr.LMSkunalsir.Repositories.AuthorRepository;
@@ -13,18 +15,24 @@ import java.util.List;
 public class BookService {
     @Autowired
     AuthorRepository authorRepository;
-    public void addBook(Book book) throws Exception {
-        Author author;
-        try{
-            author = authorRepository.findById(book.getAuthor().getId()).get();
-        }catch (Exception e){
-            throw new Exception("Author not present");
-        }
-//        how will we add this book to the list
+    public BookResponseDTO addBook(BookRequestDTO bookRequestDTO) throws Exception {
+        Author author = authorRepository.findById(bookRequestDTO.getAuthorId()).get();
 
-        List<Book> booksWritten = author.getBookList();
-        booksWritten.add(book);
+        Book book = new Book();
+        book.setTitle(bookRequestDTO.getTitle());
+        book.setGenre(bookRequestDTO.getGenre());
+        book.setPrice(bookRequestDTO.getPrice());
+        book.setIssued(false);
+        book.setAuthor(author);
 
+        author.getBookList().add(book);
         authorRepository.save(author);
+
+        //set the response for the call like
+        BookResponseDTO bookResponseDTO = new BookResponseDTO();
+        bookResponseDTO.setPrice(book.getPrice());
+        bookResponseDTO.setTitle(book.getTitle());
+
+        return bookResponseDTO;
     }
 }

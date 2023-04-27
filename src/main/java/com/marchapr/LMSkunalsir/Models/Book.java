@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -21,15 +24,26 @@ public class Book {
 
     private String title;
     private int price;
-    @Enumerated(value = EnumType.STRING)
+
     private Genre genre;
 
+    private boolean isIssued;
 //    we know that book to author is many to one relationship
 // book is the child class
     @ManyToOne
     @JoinColumn
     @JsonIgnore
     private Author author;
+
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    private List<Transaction> transactions = new ArrayList<>();
+
+    //mapping between Library and Book is 1:M
+    // book is the child class
+    @ManyToOne
+    @JoinColumn
+    LibraryCard libraryCard;
 
 }
 
